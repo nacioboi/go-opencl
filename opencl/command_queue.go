@@ -4,6 +4,7 @@ package opencl
 import "C"
 import (
 	"errors"
+	"fmt"
 	"unsafe"
 )
 
@@ -46,6 +47,7 @@ func (c CommandQueue) EnqueueReadBuffer(buffer Buffer, blockingRead bool, dataPt
 
 	var ptr unsafe.Pointer
 	var dataLen uint64
+	fmt.Printf("dataPtr Type: %T\n", dataPtr)
 	switch p := dataPtr.(type) {
 	case []float32:
 		dataLen = uint64(len(p) * 4)
@@ -77,6 +79,7 @@ func (c CommandQueue) EnqueueWriteBuffer(buffer Buffer, blockingRead bool, dataP
 
 	var ptr unsafe.Pointer
 	var dataLen uint64
+	fmt.Printf("dataPtr Type: %T\n", dataPtr)
 	switch p := dataPtr.(type) {
 	case []float32:
 		dataLen = uint64(len(p) * 4)
