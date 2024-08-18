@@ -94,6 +94,7 @@ func (c CommandQueue) EnqueueWriteBuffer(buffer Buffer, blockingRead bool, dataP
 		dataLen = uint64(len(p) * 4)
 		ptr = unsafe.Pointer(&p[0])
 	case [][]uint32:
+		fmt.Printf("len(p): %d\n", len(p))
 		// Check if the length of 2nd dimension is 4.
 		if len(p[0]) != 4 {
 			return errors.New("Unexpected length of 2nd dimension. [][4]uint32 expected.")
