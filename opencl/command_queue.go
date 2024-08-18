@@ -47,7 +47,6 @@ func (c CommandQueue) EnqueueReadBuffer(buffer Buffer, blockingRead bool, dataPt
 
 	var ptr unsafe.Pointer
 	var dataLen uint64
-	fmt.Printf("dataPtr Type: %T\n", dataPtr)
 	switch p := dataPtr.(type) {
 	case []float32:
 		dataLen = uint64(len(p) * 4)
@@ -55,8 +54,11 @@ func (c CommandQueue) EnqueueReadBuffer(buffer Buffer, blockingRead bool, dataPt
 	case []uint32:
 		dataLen = uint64(len(p) * 4)
 		ptr = unsafe.Pointer(&p[0])
-	case [][4]uint32:
-		// Handle uint4
+	case [][]uint32:
+		// Check if the length of 2nd dimension is 4.
+		if len(p[0]) != 4 {
+			return errors.New("Unexpected length of 2nd dimension. [][4]uint32 expected.")
+		}
 		dataLen = uint64(len(p) * 16)
 		ptr = unsafe.Pointer(&p[0])
 	default:
@@ -91,8 +93,11 @@ func (c CommandQueue) EnqueueWriteBuffer(buffer Buffer, blockingRead bool, dataP
 	case []uint32:
 		dataLen = uint64(len(p) * 4)
 		ptr = unsafe.Pointer(&p[0])
-	case [][4]uint32:
-		// Handle uint4
+	case [][]uint32:
+		// Check if the length of 2nd dimension is 4.
+		if len(p[0]) != 4 {
+			return errors.New("Unexpected length of 2nd dimension. [][4]uint32 expected.")
+		}
 		dataLen = uint64(len(p) * 16)
 		ptr = unsafe.Pointer(&p[0])
 	default:
