@@ -5,6 +5,7 @@ import "C"
 import (
 	"errors"
 	"fmt"
+	"reflect"
 	"unsafe"
 )
 
@@ -45,16 +46,23 @@ func (c CommandQueue) EnqueueReadBuffer(buffer Buffer, blockingRead bool, dataPt
 		br = C.CL_FALSE
 	}
 
+	typeName := reflect.TypeOf(dataPtr).String()
+
+	fmt.Printf("typeName: %s\n", typeName)
+
 	var ptr unsafe.Pointer
 	var dataLen uint64
-	switch p := dataPtr.(type) {
-	case []float32:
+	switch typeName {
+	case "[]float32":
+		p := dataPtr.([]float32)
 		dataLen = uint64(len(p) * 4)
 		ptr = unsafe.Pointer(&p[0])
-	case []uint32:
+	case "[]uint32":
+		p := dataPtr.([]uint32)
 		dataLen = uint64(len(p) * 4)
 		ptr = unsafe.Pointer(&p[0])
-	case [][]uint32:
+	case "[][]uint32":
+		p := dataPtr.([][]uint32)
 		// Check if the length of 2nd dimension is 4.
 		if len(p[0]) != 4 {
 			return errors.New("Unexpected length of 2nd dimension. [][4]uint32 expected.")
@@ -83,18 +91,21 @@ func (c CommandQueue) EnqueueWriteBuffer(buffer Buffer, blockingRead bool, dataP
 		br = C.CL_FALSE
 	}
 
+	typeName := reflect.TypeOf(dataPtr).String()
+
 	var ptr unsafe.Pointer
 	var dataLen uint64
-	fmt.Printf("dataPtr Type: %T\n", dataPtr)
-	switch p := dataPtr.(type) {
-	case []float32:
+	switch typeName {
+	case "[]float32":
+		p := dataPtr.([]float32)
 		dataLen = uint64(len(p) * 4)
 		ptr = unsafe.Pointer(&p[0])
-	case []uint32:
+	case "[]uint32":
+		p := dataPtr.([]uint32)
 		dataLen = uint64(len(p) * 4)
 		ptr = unsafe.Pointer(&p[0])
-	case [][]uint32:
-		fmt.Printf("len(p): %d\n", len(p))
+	case "[][4]uint32":
+		p := dataPtr.([][4]uint32)
 		// Check if the length of 2nd dimension is 4.
 		if len(p[0]) != 4 {
 			return errors.New("Unexpected length of 2nd dimension. [][4]uint32 expected.")
