@@ -67,8 +67,13 @@ func (c CommandQueue) EnqueueReadBuffer(buffer Buffer, blockingRead bool, dataPt
 		if len(p[0]) != 4 {
 			return errors.New("Unexpected length of 2nd dimension. [][4]uint32 expected.")
 		}
-		dataLen = uint64(len(p) * 16)
-		ptr = unsafe.Pointer(&p[0][0])
+		// Flatten the 2D array to 1D.
+		flat := make([]uint32, len(p)*4)
+		for i := range p {
+			copy(flat[i*4:], p[i][:])
+		}
+		dataLen = uint64(len(flat) * 4)
+		ptr = unsafe.Pointer(&flat[0])
 	default:
 		return errors.New("Unexpected type for dataPtr")
 	}
@@ -110,8 +115,13 @@ func (c CommandQueue) EnqueueWriteBuffer(buffer Buffer, blockingRead bool, dataP
 		if len(p[0]) != 4 {
 			return errors.New("Unexpected length of 2nd dimension. [][4]uint32 expected.")
 		}
-		dataLen = uint64(len(p) * 16)
-		ptr = unsafe.Pointer(&p[0][0])
+		// Flatten the 2D array to 1D.
+		flat := make([]uint32, len(p)*4)
+		for i := range p {
+			copy(flat[i*4:], p[i][:])
+		}
+		dataLen = uint64(len(flat) * 4)
+		ptr = unsafe.Pointer(&flat[0])
 	default:
 		return errors.New("Unexpected type for dataPtr")
 	}
