@@ -90,27 +90,27 @@ func (c CommandQueue) EnqueueReadBuffer(buffer Buffer, blockingRead bool, dataPt
 		ptr = unsafe.Pointer(&p[0])
 	case S_Int128:
 		p := dataPtr.([]int32)
-		dataLen = uint64(len(p) * 16)
+		dataLen = uint64(len(p) * 4)
 		ptr = unsafe.Pointer(&p[0])
 	case S_Int256:
 		p := dataPtr.([]int32)
-		dataLen = uint64(len(p) * 32)
+		dataLen = uint64(len(p) * 4)
 		ptr = unsafe.Pointer(&p[0])
 	case S_Int512:
 		p := dataPtr.([]int32)
-		dataLen = uint64(len(p) * 64)
+		dataLen = uint64(len(p) * 4)
 		ptr = unsafe.Pointer(&p[0])
 	case S_U_Int128:
 		p := dataPtr.([]uint32)
-		dataLen = uint64(len(p) * 16)
+		dataLen = uint64(len(p) * 4)
 		ptr = unsafe.Pointer(&p[0])
 	case S_U_Int256:
 		p := dataPtr.([]uint32)
-		dataLen = uint64(len(p) * 32)
+		dataLen = uint64(len(p) * 4)
 		ptr = unsafe.Pointer(&p[0])
 	case S_U_Int512:
 		p := dataPtr.([]uint32)
-		dataLen = uint64(len(p) * 64)
+		dataLen = uint64(len(p) * 4)
 		ptr = unsafe.Pointer(&p[0])
 	default:
 		return errors.New("Unexpected type for dataPtr")
@@ -179,27 +179,27 @@ func (c CommandQueue) EnqueueWriteBuffer(buffer Buffer, blockingRead bool, dataP
 		ptr = unsafe.Pointer(&p[0])
 	case S_Int128:
 		p := dataPtr.([]int32)
-		dataLen = uint64(len(p) * 16)
+		dataLen = uint64(len(p) * 4)
 		ptr = unsafe.Pointer(&p[0])
 	case S_Int256:
 		p := dataPtr.([]int32)
-		dataLen = uint64(len(p) * 32)
+		dataLen = uint64(len(p) * 4)
 		ptr = unsafe.Pointer(&p[0])
 	case S_Int512:
 		p := dataPtr.([]int32)
-		dataLen = uint64(len(p) * 64)
+		dataLen = uint64(len(p) * 4)
 		ptr = unsafe.Pointer(&p[0])
 	case S_U_Int128:
 		p := dataPtr.([]uint32)
-		dataLen = uint64(len(p) * 16)
+		dataLen = uint64(len(p) * 4)
 		ptr = unsafe.Pointer(&p[0])
 	case S_U_Int256:
 		p := dataPtr.([]uint32)
-		dataLen = uint64(len(p) * 32)
+		dataLen = uint64(len(p) * 4)
 		ptr = unsafe.Pointer(&p[0])
 	case S_U_Int512:
 		p := dataPtr.([]uint32)
-		dataLen = uint64(len(p) * 64)
+		dataLen = uint64(len(p) * 4)
 		ptr = unsafe.Pointer(&p[0])
 	default:
 		return errors.New("Unexpected type for dataPtr")
