@@ -4,8 +4,6 @@ package opencl
 import "C"
 import (
 	"errors"
-	"fmt"
-	"reflect"
 	"unsafe"
 )
 
@@ -46,34 +44,73 @@ func (c CommandQueue) EnqueueReadBuffer(buffer Buffer, blockingRead bool, dataPt
 		br = C.CL_FALSE
 	}
 
-	typeName := reflect.TypeOf(dataPtr).String()
-
-	fmt.Printf("typeName: %s\n", typeName)
-
 	var ptr unsafe.Pointer
 	var dataLen uint64
-	switch typeName {
-	case "[]float32":
+	switch buffer._t {
+	case Float32:
 		p := dataPtr.([]float32)
 		dataLen = uint64(len(p) * 4)
 		ptr = unsafe.Pointer(&p[0])
-	case "[]uint32":
+	case Float64:
+		p := dataPtr.([]float64)
+		dataLen = uint64(len(p) * 8)
+		ptr = unsafe.Pointer(&p[0])
+	case Int8:
+		p := dataPtr.([]int8)
+		dataLen = uint64(len(p))
+		ptr = unsafe.Pointer(&p[0])
+	case Int16:
+		p := dataPtr.([]int16)
+		dataLen = uint64(len(p) * 2)
+		ptr = unsafe.Pointer(&p[0])
+	case Int32:
+		p := dataPtr.([]int32)
+		dataLen = uint64(len(p) * 4)
+		ptr = unsafe.Pointer(&p[0])
+	case Int64:
+		p := dataPtr.([]int64)
+		dataLen = uint64(len(p) * 8)
+		ptr = unsafe.Pointer(&p[0])
+	case U_Int8:
+		p := dataPtr.([]uint8)
+		dataLen = uint64(len(p))
+		ptr = unsafe.Pointer(&p[0])
+	case U_Int16:
+		p := dataPtr.([]uint16)
+		dataLen = uint64(len(p) * 2)
+		ptr = unsafe.Pointer(&p[0])
+	case U_Int32:
 		p := dataPtr.([]uint32)
 		dataLen = uint64(len(p) * 4)
 		ptr = unsafe.Pointer(&p[0])
-	case "[][]uint32":
-		p := dataPtr.([][]uint32)
-		// Check if the length of 2nd dimension is 4.
-		if len(p[0]) != 4 {
-			return errors.New("Unexpected length of 2nd dimension. [][4]uint32 expected.")
-		}
-		// Flatten the 2D array to 1D.
-		flat := make([]uint32, len(p)*4)
-		for i := range p {
-			copy(flat[i*4:], p[i][:])
-		}
-		dataLen = uint64(len(flat) * 4)
-		ptr = unsafe.Pointer(&flat[0])
+	case U_Int64:
+		p := dataPtr.([]uint64)
+		dataLen = uint64(len(p) * 8)
+		ptr = unsafe.Pointer(&p[0])
+	case S_Int128:
+		p := dataPtr.([]int32)
+		dataLen = uint64(len(p) * (4 * 4))
+		ptr = unsafe.Pointer(&p[0])
+	case S_Int256:
+		p := dataPtr.([]int32)
+		dataLen = uint64(len(p) * (4 * 8))
+		ptr = unsafe.Pointer(&p[0])
+	case S_Int512:
+		p := dataPtr.([]int32)
+		dataLen = uint64(len(p) * (4 * 16))
+		ptr = unsafe.Pointer(&p[0])
+	case S_U_Int128:
+		p := dataPtr.([]uint32)
+		dataLen = uint64(len(p) * (4 * 4))
+		ptr = unsafe.Pointer(&p[0])
+	case S_U_Int256:
+		p := dataPtr.([]uint32)
+		dataLen = uint64(len(p) * (4 * 8))
+		ptr = unsafe.Pointer(&p[0])
+	case S_U_Int512:
+		p := dataPtr.([]uint32)
+		dataLen = uint64(len(p) * (4 * 16))
+		ptr = unsafe.Pointer(&p[0])
 	default:
 		return errors.New("Unexpected type for dataPtr")
 	}
@@ -96,32 +133,73 @@ func (c CommandQueue) EnqueueWriteBuffer(buffer Buffer, blockingRead bool, dataP
 		br = C.CL_FALSE
 	}
 
-	typeName := reflect.TypeOf(dataPtr).String()
-
 	var ptr unsafe.Pointer
 	var dataLen uint64
-	switch typeName {
-	case "[]float32":
+	switch buffer._t {
+	case Float32:
 		p := dataPtr.([]float32)
 		dataLen = uint64(len(p) * 4)
 		ptr = unsafe.Pointer(&p[0])
-	case "[]uint32":
+	case Float64:
+		p := dataPtr.([]float64)
+		dataLen = uint64(len(p) * 8)
+		ptr = unsafe.Pointer(&p[0])
+	case Int8:
+		p := dataPtr.([]int8)
+		dataLen = uint64(len(p))
+		ptr = unsafe.Pointer(&p[0])
+	case Int16:
+		p := dataPtr.([]int16)
+		dataLen = uint64(len(p) * 2)
+		ptr = unsafe.Pointer(&p[0])
+	case Int32:
+		p := dataPtr.([]int32)
+		dataLen = uint64(len(p) * 4)
+		ptr = unsafe.Pointer(&p[0])
+	case Int64:
+		p := dataPtr.([]int64)
+		dataLen = uint64(len(p) * 8)
+		ptr = unsafe.Pointer(&p[0])
+	case U_Int8:
+		p := dataPtr.([]uint8)
+		dataLen = uint64(len(p))
+		ptr = unsafe.Pointer(&p[0])
+	case U_Int16:
+		p := dataPtr.([]uint16)
+		dataLen = uint64(len(p) * 2)
+		ptr = unsafe.Pointer(&p[0])
+	case U_Int32:
 		p := dataPtr.([]uint32)
 		dataLen = uint64(len(p) * 4)
 		ptr = unsafe.Pointer(&p[0])
-	case "[][4]uint32":
-		p := dataPtr.([][4]uint32)
-		// Check if the length of 2nd dimension is 4.
-		if len(p[0]) != 4 {
-			return errors.New("Unexpected length of 2nd dimension. [][4]uint32 expected.")
-		}
-		// Flatten the 2D array to 1D.
-		flat := make([]uint32, len(p)*4)
-		for i := range p {
-			copy(flat[i*4:], p[i][:])
-		}
-		dataLen = uint64(len(flat) * 4)
-		ptr = unsafe.Pointer(&flat[0])
+	case U_Int64:
+		p := dataPtr.([]uint64)
+		dataLen = uint64(len(p) * 8)
+		ptr = unsafe.Pointer(&p[0])
+	case S_Int128:
+		p := dataPtr.([]int32)
+		dataLen = uint64(len(p) * (4 * 4))
+		ptr = unsafe.Pointer(&p[0])
+	case S_Int256:
+		p := dataPtr.([]int32)
+		dataLen = uint64(len(p) * (4 * 8))
+		ptr = unsafe.Pointer(&p[0])
+	case S_Int512:
+		p := dataPtr.([]int32)
+		dataLen = uint64(len(p) * (4 * 16))
+		ptr = unsafe.Pointer(&p[0])
+	case S_U_Int128:
+		p := dataPtr.([]uint32)
+		dataLen = uint64(len(p) * (4 * 4))
+		ptr = unsafe.Pointer(&p[0])
+	case S_U_Int256:
+		p := dataPtr.([]uint32)
+		dataLen = uint64(len(p) * (4 * 8))
+		ptr = unsafe.Pointer(&p[0])
+	case S_U_Int512:
+		p := dataPtr.([]uint32)
+		dataLen = uint64(len(p) * (4 * 16))
+		ptr = unsafe.Pointer(&p[0])
 	default:
 		return errors.New("Unexpected type for dataPtr")
 	}
