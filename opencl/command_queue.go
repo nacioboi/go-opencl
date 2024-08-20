@@ -4,7 +4,6 @@ package opencl
 import "C"
 import (
 	"errors"
-	"fmt"
 	"unsafe"
 )
 
@@ -204,9 +203,6 @@ func (c CommandQueue) EnqueueWriteBuffer(buffer Buffer, blockingRead bool, dataP
 	default:
 		return errors.New("Unexpected type for dataPtr")
 	}
-
-	fmt.Printf("dataLen: %d\n", dataLen)
-	fmt.Printf("ptr: %v\n", ptr)
 
 	errInt := clError(C.clEnqueueWriteBuffer(c.commandQueue,
 		buffer.buffer,
