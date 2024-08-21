@@ -1,4 +1,4 @@
-module github.com/nacioboi/go-opencl
+module github.com/nacioboi/go-opencl/opencl
 
 go 1.23.0
 
