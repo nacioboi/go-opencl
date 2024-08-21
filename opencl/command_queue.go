@@ -46,6 +46,7 @@ func (c CommandQueue) EnqueueReadBuffer(buffer Buffer, blockingRead bool, dataPt
 
 	var p_size uint64
 	var ptr unsafe.Pointer
+	var data_len_multiplier uint8 = buffer.size_of_data_type
 
 	switch buffer.t {
 	case Int8:
@@ -91,37 +92,45 @@ func (c CommandQueue) EnqueueReadBuffer(buffer Buffer, blockingRead bool, dataPt
 		ptr = unsafe.Pointer(&p[0])
 
 	case V_Int64:
-		p := dataPtr.([]int64)
+		p := dataPtr.([]int32)
 		p_size = uint64(len(p))
 		ptr = unsafe.Pointer(&p[0])
+		data_len_multiplier = 4
 	case V_Int128:
 		p := dataPtr.([]int32)
 		p_size = uint64(len(p))
 		ptr = unsafe.Pointer(&p[0])
+		data_len_multiplier = 4
 	case V_Int256:
 		p := dataPtr.([]int32)
 		p_size = uint64(len(p))
 		ptr = unsafe.Pointer(&p[0])
+		data_len_multiplier = 4
 	case V_Int512:
 		p := dataPtr.([]int32)
 		p_size = uint64(len(p))
 		ptr = unsafe.Pointer(&p[0])
+		data_len_multiplier = 4
 	case V_U_Int64:
-		p := dataPtr.([]uint64)
+		p := dataPtr.([]uint32)
 		p_size = uint64(len(p))
 		ptr = unsafe.Pointer(&p[0])
+		data_len_multiplier = 4
 	case V_U_Int128:
 		p := dataPtr.([]uint32)
 		p_size = uint64(len(p))
 		ptr = unsafe.Pointer(&p[0])
+		data_len_multiplier = 4
 	case V_U_Int256:
 		p := dataPtr.([]uint32)
 		p_size = uint64(len(p))
 		ptr = unsafe.Pointer(&p[0])
+		data_len_multiplier = 4
 	case V_U_Int512:
 		p := dataPtr.([]uint32)
 		p_size = uint64(len(p))
 		ptr = unsafe.Pointer(&p[0])
+		data_len_multiplier = 4
 
 	default:
 		return errors.New("Unexpected type for dataPtr")
@@ -131,7 +140,7 @@ func (c CommandQueue) EnqueueReadBuffer(buffer Buffer, blockingRead bool, dataPt
 		buffer.buffer,
 		br,
 		0,
-		C.size_t(p_size*uint64(buffer.size_of_data_type)),
+		C.size_t(p_size*uint64(data_len_multiplier)),
 		ptr,
 		0, nil, nil))
 	return clErrorToError(errInt)
@@ -147,6 +156,7 @@ func (c CommandQueue) EnqueueWriteBuffer(buffer Buffer, blockingRead bool, dataP
 
 	var p_size uint64
 	var ptr unsafe.Pointer
+	var data_len_multiplier uint8 = buffer.size_of_data_type
 
 	switch buffer.t {
 	case Int8:
@@ -192,37 +202,45 @@ func (c CommandQueue) EnqueueWriteBuffer(buffer Buffer, blockingRead bool, dataP
 		ptr = unsafe.Pointer(&p[0])
 
 	case V_Int64:
-		p := dataPtr.([]int64)
+		p := dataPtr.([]int32)
 		p_size = uint64(len(p))
 		ptr = unsafe.Pointer(&p[0])
+		data_len_multiplier = 4
 	case V_Int128:
 		p := dataPtr.([]int32)
 		p_size = uint64(len(p))
 		ptr = unsafe.Pointer(&p[0])
+		data_len_multiplier = 4
 	case V_Int256:
 		p := dataPtr.([]int32)
 		p_size = uint64(len(p))
 		ptr = unsafe.Pointer(&p[0])
+		data_len_multiplier = 4
 	case V_Int512:
 		p := dataPtr.([]int32)
 		p_size = uint64(len(p))
 		ptr = unsafe.Pointer(&p[0])
+		data_len_multiplier = 4
 	case V_U_Int64:
-		p := dataPtr.([]uint64)
+		p := dataPtr.([]uint32)
 		p_size = uint64(len(p))
 		ptr = unsafe.Pointer(&p[0])
+		data_len_multiplier = 4
 	case V_U_Int128:
 		p := dataPtr.([]uint32)
 		p_size = uint64(len(p))
 		ptr = unsafe.Pointer(&p[0])
+		data_len_multiplier = 4
 	case V_U_Int256:
 		p := dataPtr.([]uint32)
 		p_size = uint64(len(p))
 		ptr = unsafe.Pointer(&p[0])
+		data_len_multiplier = 4
 	case V_U_Int512:
 		p := dataPtr.([]uint32)
 		p_size = uint64(len(p))
 		ptr = unsafe.Pointer(&p[0])
+		data_len_multiplier = 4
 
 	default:
 		return errors.New("Unexpected type for dataPtr")
@@ -232,7 +250,7 @@ func (c CommandQueue) EnqueueWriteBuffer(buffer Buffer, blockingRead bool, dataP
 		buffer.buffer,
 		br,
 		0,
-		C.size_t(p_size*uint64(buffer.size_of_data_type)),
+		C.size_t(p_size*uint64(data_len_multiplier)),
 		ptr,
 		0, nil, nil))
 	return clErrorToError(errInt)

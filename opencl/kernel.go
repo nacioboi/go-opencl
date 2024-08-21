@@ -26,7 +26,8 @@ func createKernel(program Program, kernelName string) (Kernel, error) {
 	return Kernel{kernel}, nil
 }
 
-func (k Kernel) SetArg(argIndex uint32, argSize uint64, argValue interface{}) error {
+func (k Kernel) SetArg(argIndex uint32, argValue interface{}) error {
+	argSize := argValue.(*Buffer).SizeOfCLType()
 	var argPtr unsafe.Pointer
 	switch argValue.(type) {
 	case *Buffer:

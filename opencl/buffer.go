@@ -41,6 +41,7 @@ type Buffer struct {
 	t                 BufferType
 	size_of_data_type uint8
 	num_elements      uint32
+	total_size        uint64
 }
 
 func createBuffer(context Context, flags []MemFlags, t BufferType, num_elements uint32) (Buffer, error) {
@@ -52,35 +53,27 @@ func createBuffer(context Context, flags []MemFlags, t BufferType, num_elements 
 
 	var data_len_multiplier uint8
 	switch t {
-	case Int8:
-	case U_Int8:
+	case Int8, U_Int8:
 		data_len_multiplier = 1
-	case Int16:
-	case U_Int16:
+	case Int16,
+		U_Int16:
 		data_len_multiplier = 2
-	case Int32:
-	case U_Int32:
+	case Int32, U_Int32:
 		data_len_multiplier = 4
-	case Int64:
-	case U_Int64:
+	case Int64, U_Int64:
 		data_len_multiplier = 8
-
-	// All vectors are 32bits for each item in the vector.
-	case V_Int64:
-	case V_Int128:
-	case V_Int256:
-	case V_Int512:
-	case V_U_Int64:
-	case V_U_Int128:
-	case V_U_Int256:
-	case V_U_Int512:
+	case V_Int64, V_U_Int64:
 		data_len_multiplier = 4
-
+	case V_Int128, V_U_Int128:
+		data_len_multiplier = 8
+	case V_Int256, V_U_Int256:
+		data_len_multiplier = 16
+	case V_Int512, V_U_Int512:
+		data_len_multiplier = 32
 	case Float32:
 		data_len_multiplier = 4
 	case Float64:
 		data_len_multiplier = 8
-
 	default:
 		return Buffer{}, errors.New("Unexpected type for t")
 	}
@@ -99,7 +92,11 @@ func createBuffer(context Context, flags []MemFlags, t BufferType, num_elements 
 		return Buffer{}, clErrorToError(errInt)
 	}
 
-	return Buffer{buffer, t, data_len_multiplier, num_elements}, nil
+	return Buffer{buffer, t, data_len_multiplier, num_elements, size}, nil
+}
+
+func (b Buffer) SizeOfCLType() uint64 {
+	return uint64(C.sizeof_cl_mem)
 }
 
 func (b Buffer) SizeOfDataType() uint64 {
@@ -111,5 +108,5 @@ func (b Buffer) Release() {
 }
 
 func (b Buffer) SizeAllocated() uint64 {
-	return uint64(b.size_of_data_type) * uint64(b.num_elements)
+	return b.total_size
 }
