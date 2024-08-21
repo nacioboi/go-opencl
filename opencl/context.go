@@ -35,8 +35,8 @@ func (c Context) CreateProgramWithSource(programCode string) (Program, error) {
 	return createProgramWithSource(c, programCode)
 }
 
-func (c Context) CreateBuffer(memFlags []MemFlags, size uint64, t BufferType) (Buffer, error) {
-	return createBuffer(c, memFlags, size, t)
+func (c Context) CreateBuffer(memFlags []MemFlags, t BufferType, num_elements uint32) (Buffer, error) {
+	return createBuffer(c, memFlags, t, num_elements)
 }
 
 func (c Context) Release() {

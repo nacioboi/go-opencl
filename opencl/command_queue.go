@@ -44,73 +44,85 @@ func (c CommandQueue) EnqueueReadBuffer(buffer Buffer, blockingRead bool, dataPt
 		br = C.CL_FALSE
 	}
 
+	var p_size uint64
 	var ptr unsafe.Pointer
-	var dataLen uint64
+
 	switch buffer._t {
-	case Float32:
-		p := dataPtr.([]float32)
-		dataLen = uint64(len(p) * 4)
-		ptr = unsafe.Pointer(&p[0])
-	case Float64:
-		p := dataPtr.([]float64)
-		dataLen = uint64(len(p) * 8)
-		ptr = unsafe.Pointer(&p[0])
 	case Int8:
 		p := dataPtr.([]int8)
-		dataLen = uint64(len(p))
+		p_size = uint64(len(p))
 		ptr = unsafe.Pointer(&p[0])
 	case Int16:
 		p := dataPtr.([]int16)
-		dataLen = uint64(len(p) * 2)
+		p_size = uint64(len(p))
 		ptr = unsafe.Pointer(&p[0])
 	case Int32:
 		p := dataPtr.([]int32)
-		dataLen = uint64(len(p) * 4)
+		p_size = uint64(len(p))
 		ptr = unsafe.Pointer(&p[0])
 	case Int64:
 		p := dataPtr.([]int64)
-		dataLen = uint64(len(p) * 8)
+		p_size = uint64(len(p))
 		ptr = unsafe.Pointer(&p[0])
 	case U_Int8:
 		p := dataPtr.([]uint8)
-		dataLen = uint64(len(p))
+		p_size = uint64(len(p))
 		ptr = unsafe.Pointer(&p[0])
 	case U_Int16:
 		p := dataPtr.([]uint16)
-		dataLen = uint64(len(p) * 2)
+		p_size = uint64(len(p))
 		ptr = unsafe.Pointer(&p[0])
 	case U_Int32:
 		p := dataPtr.([]uint32)
-		dataLen = uint64(len(p) * 4)
+		p_size = uint64(len(p))
 		ptr = unsafe.Pointer(&p[0])
 	case U_Int64:
 		p := dataPtr.([]uint64)
-		dataLen = uint64(len(p) * 8)
+		p_size = uint64(len(p))
 		ptr = unsafe.Pointer(&p[0])
-	case S_Int128:
+
+	case Float32:
+		p := dataPtr.([]float32)
+		p_size = uint64(len(p))
+		ptr = unsafe.Pointer(&p[0])
+	case Float64:
+		p := dataPtr.([]float64)
+		p_size = uint64(len(p))
+		ptr = unsafe.Pointer(&p[0])
+
+	case V_Int64:
+		p := dataPtr.([]int64)
+		p_size = uint64(len(p))
+		ptr = unsafe.Pointer(&p[0])
+	case V_Int128:
 		p := dataPtr.([]int32)
-		dataLen = uint64(len(p) * 4)
+		p_size = uint64(len(p))
 		ptr = unsafe.Pointer(&p[0])
-	case S_Int256:
+	case V_Int256:
 		p := dataPtr.([]int32)
-		dataLen = uint64(len(p) * 4)
+		p_size = uint64(len(p))
 		ptr = unsafe.Pointer(&p[0])
-	case S_Int512:
+	case V_Int512:
 		p := dataPtr.([]int32)
-		dataLen = uint64(len(p) * 4)
+		p_size = uint64(len(p))
 		ptr = unsafe.Pointer(&p[0])
-	case S_U_Int128:
+	case V_U_Int64:
+		p := dataPtr.([]uint64)
+		p_size = uint64(len(p))
+		ptr = unsafe.Pointer(&p[0])
+	case V_U_Int128:
 		p := dataPtr.([]uint32)
-		dataLen = uint64(len(p) * 4)
+		p_size = uint64(len(p))
 		ptr = unsafe.Pointer(&p[0])
-	case S_U_Int256:
+	case V_U_Int256:
 		p := dataPtr.([]uint32)
-		dataLen = uint64(len(p) * 4)
+		p_size = uint64(len(p))
 		ptr = unsafe.Pointer(&p[0])
-	case S_U_Int512:
+	case V_U_Int512:
 		p := dataPtr.([]uint32)
-		dataLen = uint64(len(p) * 4)
+		p_size = uint64(len(p))
 		ptr = unsafe.Pointer(&p[0])
+
 	default:
 		return errors.New("Unexpected type for dataPtr")
 	}
@@ -119,7 +131,7 @@ func (c CommandQueue) EnqueueReadBuffer(buffer Buffer, blockingRead bool, dataPt
 		buffer.buffer,
 		br,
 		0,
-		C.size_t(dataLen),
+		C.size_t(p_size*buffer.size_of_data_type),
 		ptr,
 		0, nil, nil))
 	return clErrorToError(errInt)
@@ -133,73 +145,85 @@ func (c CommandQueue) EnqueueWriteBuffer(buffer Buffer, blockingRead bool, dataP
 		br = C.CL_FALSE
 	}
 
+	var p_size uint64
 	var ptr unsafe.Pointer
-	var dataLen uint64
+
 	switch buffer._t {
-	case Float32:
-		p := dataPtr.([]float32)
-		dataLen = uint64(len(p) * 4)
-		ptr = unsafe.Pointer(&p[0])
-	case Float64:
-		p := dataPtr.([]float64)
-		dataLen = uint64(len(p) * 8)
-		ptr = unsafe.Pointer(&p[0])
 	case Int8:
 		p := dataPtr.([]int8)
-		dataLen = uint64(len(p))
+		p_size = uint64(len(p))
 		ptr = unsafe.Pointer(&p[0])
 	case Int16:
 		p := dataPtr.([]int16)
-		dataLen = uint64(len(p) * 2)
+		p_size = uint64(len(p))
 		ptr = unsafe.Pointer(&p[0])
 	case Int32:
 		p := dataPtr.([]int32)
-		dataLen = uint64(len(p) * 4)
+		p_size = uint64(len(p))
 		ptr = unsafe.Pointer(&p[0])
 	case Int64:
 		p := dataPtr.([]int64)
-		dataLen = uint64(len(p) * 8)
+		p_size = uint64(len(p))
 		ptr = unsafe.Pointer(&p[0])
 	case U_Int8:
 		p := dataPtr.([]uint8)
-		dataLen = uint64(len(p))
+		p_size = uint64(len(p))
 		ptr = unsafe.Pointer(&p[0])
 	case U_Int16:
 		p := dataPtr.([]uint16)
-		dataLen = uint64(len(p) * 2)
+		p_size = uint64(len(p))
 		ptr = unsafe.Pointer(&p[0])
 	case U_Int32:
 		p := dataPtr.([]uint32)
-		dataLen = uint64(len(p) * 4)
+		p_size = uint64(len(p))
 		ptr = unsafe.Pointer(&p[0])
 	case U_Int64:
 		p := dataPtr.([]uint64)
-		dataLen = uint64(len(p) * 8)
+		p_size = uint64(len(p))
 		ptr = unsafe.Pointer(&p[0])
-	case S_Int128:
+
+	case Float32:
+		p := dataPtr.([]float32)
+		p_size = uint64(len(p))
+		ptr = unsafe.Pointer(&p[0])
+	case Float64:
+		p := dataPtr.([]float64)
+		p_size = uint64(len(p))
+		ptr = unsafe.Pointer(&p[0])
+
+	case V_Int64:
+		p := dataPtr.([]int64)
+		p_size = uint64(len(p))
+		ptr = unsafe.Pointer(&p[0])
+	case V_Int128:
 		p := dataPtr.([]int32)
-		dataLen = uint64(len(p) * 4)
+		p_size = uint64(len(p))
 		ptr = unsafe.Pointer(&p[0])
-	case S_Int256:
+	case V_Int256:
 		p := dataPtr.([]int32)
-		dataLen = uint64(len(p) * 4)
+		p_size = uint64(len(p))
 		ptr = unsafe.Pointer(&p[0])
-	case S_Int512:
+	case V_Int512:
 		p := dataPtr.([]int32)
-		dataLen = uint64(len(p) * 4)
+		p_size = uint64(len(p))
 		ptr = unsafe.Pointer(&p[0])
-	case S_U_Int128:
+	case V_U_Int64:
+		p := dataPtr.([]uint64)
+		p_size = uint64(len(p))
+		ptr = unsafe.Pointer(&p[0])
+	case V_U_Int128:
 		p := dataPtr.([]uint32)
-		dataLen = uint64(len(p) * 4)
+		p_size = uint64(len(p))
 		ptr = unsafe.Pointer(&p[0])
-	case S_U_Int256:
+	case V_U_Int256:
 		p := dataPtr.([]uint32)
-		dataLen = uint64(len(p) * 4)
+		p_size = uint64(len(p))
 		ptr = unsafe.Pointer(&p[0])
-	case S_U_Int512:
+	case V_U_Int512:
 		p := dataPtr.([]uint32)
-		dataLen = uint64(len(p) * 4)
+		p_size = uint64(len(p))
 		ptr = unsafe.Pointer(&p[0])
+
 	default:
 		return errors.New("Unexpected type for dataPtr")
 	}
@@ -208,7 +232,7 @@ func (c CommandQueue) EnqueueWriteBuffer(buffer Buffer, blockingRead bool, dataP
 		buffer.buffer,
 		br,
 		0,
-		C.size_t(dataLen),
+		C.size_t(p_size*buffer.size_of_data_type),
 		ptr,
 		0, nil, nil))
 	return clErrorToError(errInt)

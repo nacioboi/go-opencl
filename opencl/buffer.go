@@ -2,6 +2,7 @@ package opencl
 
 // #include "opencl.h"
 import "C"
+import "errors"
 
 type MemFlags uint64
 
@@ -25,25 +26,65 @@ const (
 	U_Int16
 	U_Int32
 	U_Int64
-	S_Int128
-	S_Int256
-	S_Int512
-	S_U_Int128
-	S_U_Int256
-	S_U_Int512
+	V_Int64
+	V_Int128
+	V_Int256
+	V_Int512
+	V_U_Int64
+	V_U_Int128
+	V_U_Int256
+	V_U_Int512
 )
 
 type Buffer struct {
-	buffer C.cl_mem
-	_t     BufferType
+	buffer            C.cl_mem
+	_t                BufferType
+	size_of_data_type uint64
 }
 
-func createBuffer(context Context, flags []MemFlags, size uint64, t BufferType) (Buffer, error) {
-	// AND together all flags
+func createBuffer(context Context, flags []MemFlags, t BufferType, num_elements uint32) (Buffer, error) {
+	// OR together all flags
 	flagBitField := uint64(0)
 	for _, flag := range flags {
-		flagBitField &= uint64(flag)
+		flagBitField |= uint64(flag)
 	}
+
+	var data_len_multiplier uint64
+	switch t {
+	case Int8:
+	case U_Int8:
+		data_len_multiplier = 1
+	case Int16:
+	case U_Int16:
+		data_len_multiplier = 2
+	case Int32:
+	case U_Int32:
+		data_len_multiplier = 4
+	case Int64:
+	case U_Int64:
+		data_len_multiplier = 8
+
+	// All vectors are 32bits for each item in the vector.
+	case V_Int64:
+	case V_Int128:
+	case V_Int256:
+	case V_Int512:
+	case V_U_Int64:
+	case V_U_Int128:
+	case V_U_Int256:
+	case V_U_Int512:
+		data_len_multiplier = 4
+
+	case Float32:
+		data_len_multiplier = 4
+	case Float64:
+		data_len_multiplier = 8
+
+	default:
+		return Buffer{}, errors.New("Unexpected type for t")
+	}
+
+	size := uint64(num_elements) * data_len_multiplier
 
 	var errInt clError
 	buffer := C.clCreateBuffer(
@@ -57,11 +98,11 @@ func createBuffer(context Context, flags []MemFlags, size uint64, t BufferType) 
 		return Buffer{}, clErrorToError(errInt)
 	}
 
-	return Buffer{buffer, t}, nil
+	return Buffer{buffer, t, data_len_multiplier}, nil
 }
 
-func (b Buffer) Size() uint64 {
-	return uint64(C.sizeof_cl_mem)
+func (b Buffer) SizeOfDataType() uint64 {
+	return b.size_of_data_type
 }
 
 func (b Buffer) Release() {
