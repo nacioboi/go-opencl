@@ -47,7 +47,7 @@ func (c CommandQueue) EnqueueReadBuffer(buffer Buffer, blockingRead bool, dataPt
 	var p_size uint64
 	var ptr unsafe.Pointer
 
-	switch buffer._t {
+	switch buffer.t {
 	case Int8:
 		p := dataPtr.([]int8)
 		p_size = uint64(len(p))
@@ -131,7 +131,7 @@ func (c CommandQueue) EnqueueReadBuffer(buffer Buffer, blockingRead bool, dataPt
 		buffer.buffer,
 		br,
 		0,
-		C.size_t(p_size*buffer.size_of_data_type),
+		C.size_t(p_size*uint64(buffer.size_of_data_type)),
 		ptr,
 		0, nil, nil))
 	return clErrorToError(errInt)
@@ -148,7 +148,7 @@ func (c CommandQueue) EnqueueWriteBuffer(buffer Buffer, blockingRead bool, dataP
 	var p_size uint64
 	var ptr unsafe.Pointer
 
-	switch buffer._t {
+	switch buffer.t {
 	case Int8:
 		p := dataPtr.([]int8)
 		p_size = uint64(len(p))
@@ -232,7 +232,7 @@ func (c CommandQueue) EnqueueWriteBuffer(buffer Buffer, blockingRead bool, dataP
 		buffer.buffer,
 		br,
 		0,
-		C.size_t(p_size*buffer.size_of_data_type),
+		C.size_t(p_size*uint64(buffer.size_of_data_type)),
 		ptr,
 		0, nil, nil))
 	return clErrorToError(errInt)

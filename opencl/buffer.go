@@ -38,8 +38,9 @@ const (
 
 type Buffer struct {
 	buffer            C.cl_mem
-	_t                BufferType
-	size_of_data_type uint64
+	t                 BufferType
+	size_of_data_type uint8
+	num_elements      uint32
 }
 
 func createBuffer(context Context, flags []MemFlags, t BufferType, num_elements uint32) (Buffer, error) {
@@ -49,7 +50,7 @@ func createBuffer(context Context, flags []MemFlags, t BufferType, num_elements 
 		flagBitField |= uint64(flag)
 	}
 
-	var data_len_multiplier uint64
+	var data_len_multiplier uint8
 	switch t {
 	case Int8:
 	case U_Int8:
@@ -84,7 +85,7 @@ func createBuffer(context Context, flags []MemFlags, t BufferType, num_elements 
 		return Buffer{}, errors.New("Unexpected type for t")
 	}
 
-	size := uint64(num_elements) * data_len_multiplier
+	size := uint64(num_elements) * uint64(data_len_multiplier)
 
 	var errInt clError
 	buffer := C.clCreateBuffer(
@@ -98,13 +99,17 @@ func createBuffer(context Context, flags []MemFlags, t BufferType, num_elements 
 		return Buffer{}, clErrorToError(errInt)
 	}
 
-	return Buffer{buffer, t, data_len_multiplier}, nil
+	return Buffer{buffer, t, data_len_multiplier, num_elements}, nil
 }
 
 func (b Buffer) SizeOfDataType() uint64 {
-	return b.size_of_data_type
+	return uint64(b.size_of_data_type)
 }
 
 func (b Buffer) Release() {
 	C.clReleaseMemObject(b.buffer)
+}
+
+func (b Buffer) SizeAllocated() uint64 {
+	return uint64(b.size_of_data_type) * uint64(b.num_elements)
 }
