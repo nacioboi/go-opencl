@@ -33,6 +33,7 @@ const (
 	DeviceInfoType                     = DeviceInfo(C.CL_DEVICE_TYPE)
 	DeviceVendor                       = DeviceInfo(C.CL_DEVICE_VENDOR)
 	DriverVersion                      = DeviceInfo(C.CL_DRIVER_VERSION)
+	DeviceName                         = DeviceInfo(0x102B)
 )
 
 var (
@@ -44,6 +45,7 @@ var (
 		DeviceInfoType:          {DeviceTypeDefault},
 		DeviceVendor:            {""},
 		DriverVersion:           {"", MajorMinor{}},
+		DeviceName:              {""},
 	}
 )
 
