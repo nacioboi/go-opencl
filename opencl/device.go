@@ -33,7 +33,7 @@ const (
 	DeviceInfoType                     = DeviceInfo(C.CL_DEVICE_TYPE)
 	DeviceVendor                       = DeviceInfo(C.CL_DEVICE_VENDOR)
 	DriverVersion                      = DeviceInfo(C.CL_DRIVER_VERSION)
-	DeviceName                         = DeviceInfo(0x102B)
+	DeviceName                         = DeviceInfo(0x4038)
 )
 
 var (
